@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventario de Computadoras</title>
+  <title>Inventario del laboratorio</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
   <div class="container mt-4">
-    <h1 class="text-center mb-4">Inventario de Computadoras</h1>
+    <h1 class="text-center mb-4">Inventario del laboratorio</h1>
 
     <!-- Formulario para agregar computadoras -->
     <div class="row mb-3">
@@ -105,6 +105,23 @@
   <script>
     let inventario = [];
 
+    // Cargar datos al iniciar
+    window.onload = function () {
+      cargarDesdeLocalStorage();
+    };
+
+    function guardarEnLocalStorage() {
+      localStorage.setItem("inventario", JSON.stringify(inventario));
+    }
+
+    function cargarDesdeLocalStorage() {
+      const datos = localStorage.getItem("inventario");
+      if (datos) {
+        inventario = JSON.parse(datos);
+        renderInventario();
+      }
+    }
+
     function renderInventario() {
       const cuerpo = document.getElementById("tablaCuerpo");
       cuerpo.innerHTML = "";
@@ -138,13 +155,16 @@
       };
       if (equipo.id) {
         inventario.push(equipo);
+        guardarEnLocalStorage();
         renderInventario();
-        ["idEquipo", "tipo", "modelo", "componentes", "estado", "ubicacion", "responsable"].forEach(id => document.getElementById(id).value = "");
+        ["idEquipo", "tipo", "modelo", "componentes", "estado", "ubicacion", "responsable"]
+          .forEach(id => document.getElementById(id).value = "");
       }
     }
 
     function eliminarEquipo(index) {
       inventario.splice(index, 1);
+      guardarEnLocalStorage();
       renderInventario();
     }
 
@@ -173,18 +193,19 @@
         responsable: document.getElementById("editResponsable").value.trim()
       };
       inventario[index] = actualizado;
+      guardarEnLocalStorage();
       renderInventario();
       bootstrap.Modal.getInstance(document.getElementById("modalEditar")).hide();
     }
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <footer class="text-center text-muted mt-5 mb-4">
     <hr>
     <p>Este sistema fue desarrollado y es mantenido con amor, café y un par de líneas de código por el <strong>Departamento de IT</strong>.</p>
     <p>Responsable: <strong>Augusto Carrizo</strong> 🧠⚡</p>
-</footer>
-
+  </footer>
 </body>
 
 </html>
