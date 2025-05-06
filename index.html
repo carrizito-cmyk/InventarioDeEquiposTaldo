@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario de Equipos Electrónicos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 40px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #busqueda, .formulario input, .formulario button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .formulario {
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+        }
+        /* Estilos del Modal */
+        #modalSoporte {
+            display:none;
+            position:fixed;
+            z-index:999;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+            background-color:rgba(0,0,0,0.6);
+        }
+        .modal-content {
+            background-color:white;
+            width:90%;
+            max-width:800px;
+            margin:50px auto;
+            padding:20px;
+            border-radius:8px;
+            position:relative;
+        }
+        .close-btn {
+            position:absolute;
+            top:10px;
+            right:20px;
+            font-size:24px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Botón de Soporte Técnico -->
+<div style="text-align: right; margin-bottom: 15px;">
+    <button onclick="abrirModal()" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Soporte Técnico
+    </button>
+</div>
+
+<h1>Inventario de Equipos Electrónicos</h1>
+
+<input type="text" id="busqueda" placeholder="Buscar en el inventario...">
+
+<div class="formulario">
+    <h3>Agregar nuevo equipo</h3>
+    <input type="text" id="idEquipo" placeholder="ID del Equipo">
+    <input type="text" id="tipo" placeholder="Tipo (ej: Computadora, Impresora)">
+    <input type="text" id="modelo" placeholder="Marca / Modelo">
+    <input type="text" id="componentes" placeholder="Componentes">
+    <input type="text" id="estado" placeholder="Estado (ej: Operativo, Dañado)">
+    <input type="text" id="ubicacion" placeholder="Ubicación">
+    <button onclick="agregarEquipo()">Agregar equipo</button>
+</div>
+
+<table id="tablaInventario">
+    <thead>
+        <tr>
+            <th>ID del Equipo</th>
+            <th>Tipo</th>
+            <th>Marca / Modelo</th>
+            <th>Componentes</th>
+            <th>Estado</th>
+            <th>Ubicación</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Se cargará desde localStorage -->
+    </tbody>
+</table>
+
+<div class="footer">
+    Inventario gestionado por el área de sistemas
+</div>
+
+<!-- Modal de soporte técnico -->
+<div id="modalSoporte">
+    <div class="modal-content">
+        <span class="close-btn" onclick="cerrarModal()">&times;</span>
+        <h2>Formulario de Soporte Técnico</h2>
+        <iframe src="https://tuenlace.com/formulario" width="100%" height="500" style="border:none;"></iframe>
+    </div>
+</div>
+
+<script>
+    const inputBusqueda = document.getElementById("busqueda");
+    const tabla = document.getElementById("tablaInventario").getElementsByTagName("tbody")[0];
+
+    let inventario = [];
+
+    // Cargar inventario desde localStorage
+    window.onload = function () {
+        const datosGuardados = localStorage.getItem("inventario");
+        if (datosGuardados) {
+            inventario = JSON.parse(datosGuardados);
+            inventario.forEach(equipo => insertarFila(equipo));
+        }
+    };
+
+    inputBusqueda.addEventListener("keyup", function () {
+        const filtro = inputBusqueda.value.toLowerCase();
+        const filas = tabla.getElementsByTagName("tr");
+
+        for (let i = 0; i < filas.length; i++) {
+            let mostrar = false;
+            const celdas = filas[i].getElementsByTagName("td");
+
+            for (let j = 0; j < celdas.length; j++) {
+                const texto = celdas[j].textContent.toLowerCase();
+                if (texto.indexOf(filtro) > -1) {
+                    mostrar = true;
+                    break;
+                }
+            }
+
+            filas[i].style.display = mostrar ? "" : "none";
+        }
+    });
+
+    function agregarEquipo() {
+        const id = document.getElementById("idEquipo").value.trim();
+        const tipo = document.getElementById("tipo").value.trim();
+        const modelo = document.getElementById("modelo").value.trim();
+        const componentes = document.getElementById("componentes").value.trim();
+        const estado = document.getElementById("estado").value.trim();
+        const ubicacion = document.getElementById("ubicacion").value.trim();
+
+        if (!id || !tipo || !modelo || !componentes || !estado || !ubicacion) {
+            alert("Por favor, completá todos los campos.");
+            return;
+        }
+
+        const nuevoEquipo = { id, tipo, modelo, componentes, estado, ubicacion };
+        inventario.push(nuevoEquipo);
+        localStorage.setItem("inventario", JSON.stringify(inventario));
+        insertarFila(nuevoEquipo);
+        limpiarFormulario();
+    }
+
+    function insertarFila(equipo) {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+            <td>${equipo.id}</td>
+            <td>${equipo.tipo}</td>
+            <td>${equipo.modelo}</td>
+            <td>${equipo.componentes}</td>
+            <td>${equipo.estado}</td>
+            <td>${equipo.ubicacion}</td>
+        `;
+        tabla.appendChild(fila);
+    }
+
+    function limpiarFormulario() {
+        document.getElementById("idEquipo").value = "";
+        document.getElementById("tipo").value = "";
+        document.getElementById("modelo").value = "";
+        document.getElementById("componentes").value = "";
+        document.getElementById("estado").value = "";
+        document.getElementById("ubicacion").value = "";
+    }
+
+    function abrirModal() {
+        document.getElementById("modalSoporte").style.display = "block";
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalSoporte").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
