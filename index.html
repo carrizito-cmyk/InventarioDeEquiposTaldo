@@ -3,218 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <title>Inventario de Equipos Electrónicos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 40px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        #busqueda, .formulario input, .formulario button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .formulario {
-            background-color: #fff;
-            padding: 15px;
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-        th {
-            background-color: #007BFF;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #666;
-        }
-        /* Estilos del Modal */
-        #modalSoporte {
-            display:none;
-            position:fixed;
-            z-index:999;
-            left:0;
-            top:0;
-            width:100%;
-            height:100%;
-            background-color:rgba(0,0,0,0.6);
-        }
-        .modal-content {
-            background-color:white;
-            width:90%;
-            max-width:800px;
-            margin:50px auto;
-            padding:20px;
-            border-radius:8px;
-            position:relative;
-        }
-        .close-btn {
-            position:absolute;
-            top:10px;
-            right:20px;
-            font-size:24px;
-            cursor:pointer;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<!-- Botón de Soporte Técnico -->
-<div style="text-align: right; margin-bottom: 15px;">
-    <button onclick="abrirModal()" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Soporte Técnico
-    </button>
+<div class="container my-4">
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-success" onclick="abrirModal()">Soporte Técnico</button>
+    </div>
+
+    <h1 class="text-center mb-4">Inventario de Equipos Electrónicos</h1>
+
+    <input type="text" id="busqueda" class="form-control mb-3" placeholder="Buscar en el inventario...">
+
+    <div class="card p-3 mb-4">
+        <h5>Agregar nuevo equipo</h5>
+        <div class="row g-2">
+            <div class="col-md-4"><input type="text" id="idEquipo" class="form-control" placeholder="ID del Equipo"></div>
+            <div class="col-md-4"><input type="text" id="tipo" class="form-control" placeholder="Tipo"></div>
+            <div class="col-md-4"><input type="text" id="modelo" class="form-control" placeholder="Marca / Modelo"></div>
+            <div class="col-md-4"><input type="text" id="componentes" class="form-control" placeholder="Componentes"></div>
+            <div class="col-md-4"><input type="text" id="estado" class="form-control" placeholder="Estado"></div>
+            <div class="col-md-4"><input type="text" id="ubicacion" class="form-control" placeholder="Ubicación"></div>
+            <div class="col-12 text-end">
+                <button class="btn btn-primary mt-2" onclick="agregarEquipo()">Agregar equipo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Modelo</th>
+                    <th>Componentes</th>
+                    <th>Estado</th>
+                    <th>Ubicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaInventario"></tbody>
+        </table>
+    </div>
+
+    <p class="text-center text-muted mt-4">Inventario gestionado por el área de sistemas</p>
 </div>
 
-<h1>Inventario de Equipos Electrónicos</h1>
-
-<input type="text" id="busqueda" placeholder="Buscar en el inventario...">
-
-<div class="formulario">
-    <h3>Agregar nuevo equipo</h3>
-    <input type="text" id="idEquipo" placeholder="ID del Equipo">
-    <input type="text" id="tipo" placeholder="Tipo (ej: Computadora, Impresora)">
-    <input type="text" id="modelo" placeholder="Marca / Modelo">
-    <input type="text" id="componentes" placeholder="Componentes">
-    <input type="text" id="estado" placeholder="Estado (ej: Operativo, Dañado)">
-    <input type="text" id="ubicacion" placeholder="Ubicación">
-    <button onclick="agregarEquipo()">Agregar equipo</button>
-</div>
-
-<table id="tablaInventario">
-    <thead>
-        <tr>
-            <th>ID del Equipo</th>
-            <th>Tipo</th>
-            <th>Marca / Modelo</th>
-            <th>Componentes</th>
-            <th>Estado</th>
-            <th>Ubicación</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Se cargará desde localStorage -->
-    </tbody>
-</table>
-
-<div class="footer">
-    Inventario gestionado por el área de sistemas
-</div>
-
-<!-- Modal de soporte técnico -->
-<div id="modalSoporte">
-    <div class="modal-content">
-        <span class="close-btn" onclick="cerrarModal()">&times;</span>
-        <h2>Formulario de Soporte Técnico</h2>
-        <iframe src="https://forms.office.com/pages/responsepage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__5S4d_pUNVFVSFZQVzdVMjdJVDBDSFVVWE5ZMVdGSy4u&route=shorturl" width="100%" height="500" style="border:none;"></iframe>
+<!-- Modal Soporte Técnico -->
+<div class="modal" id="modalSoporte" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Soporte Técnico</h5>
+                <button type="button" class="btn-close" onclick="cerrarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://forms.office.com/pages/responsepage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__5S4d_pUNVFVSFZQVzdVMjdJVDBDSFVVWE5ZMVdGSy4u&route=shorturl" width="100%" height="500" style="border:none;"></iframe>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-    const inputBusqueda = document.getElementById("busqueda");
-    const tabla = document.getElementById("tablaInventario").getElementsByTagName("tbody")[0];
+<!-- Modal Editar -->
+<div class="modal" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Equipo</h5>
+                <button type="button" class="btn-close" onclick="cerrarModalEditar()"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editIndex">
+                <div class="row g-2">
+                    <div class="col-md-4"><input type="text" id="editId" class="form-control" placeholder="ID del Equipo"></div>
+                    <div class="col-md-4"><input type="text" id="editTipo" class="form-control" placeholder="Tipo"></div>
+                    <div class="col-md-4"><input type="text" id="editModelo" class="form-control" placeholder="Marca / Modelo"></div>
+                    <div class="col-md-4"><input type="text" id="editComponentes" class="form-control" placeholder="Componentes"></div>
+                    <div class="col-md-4"><input type="text" id="editEstado" class="form-control" placeholder="Estado"></div>
+                    <div class="col-md-4"><input type="text" id="editUbicacion" class="form-control" placeholder="Ubicación"></div>
+                </div>
+                <div class="text-end mt-3">
+                    <button class="btn btn-primary" onclick="guardarEdicion()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Scripts -->
+<script>
+    const tabla = document.getElementById("tablaInventario");
+    const inputBusqueda = document.getElementById("busqueda");
     let inventario = [];
 
-    // Cargar inventario desde localStorage
-    window.onload = function () {
-        const datosGuardados = localStorage.getItem("inventario");
-        if (datosGuardados) {
-            inventario = JSON.parse(datosGuardados);
-            inventario.forEach(equipo => insertarFila(equipo));
+    window.onload = () => {
+        const guardado = localStorage.getItem("inventario");
+        if (guardado) {
+            inventario = JSON.parse(guardado);
+            renderInventario();
         }
     };
 
-    inputBusqueda.addEventListener("keyup", function () {
-        const filtro = inputBusqueda.value.toLowerCase();
-        const filas = tabla.getElementsByTagName("tr");
-
-        for (let i = 0; i < filas.length; i++) {
-            let mostrar = false;
-            const celdas = filas[i].getElementsByTagName("td");
-
-            for (let j = 0; j < celdas.length; j++) {
-                const texto = celdas[j].textContent.toLowerCase();
-                if (texto.indexOf(filtro) > -1) {
-                    mostrar = true;
-                    break;
-                }
-            }
-
-            filas[i].style.display = mostrar ? "" : "none";
-        }
+    inputBusqueda.addEventListener("input", () => {
+        renderInventario(inputBusqueda.value.toLowerCase());
     });
 
     function agregarEquipo() {
-        const id = document.getElementById("idEquipo").value.trim();
-        const tipo = document.getElementById("tipo").value.trim();
-        const modelo = document.getElementById("modelo").value.trim();
-        const componentes = document.getElementById("componentes").value.trim();
-        const estado = document.getElementById("estado").value.trim();
-        const ubicacion = document.getElementById("ubicacion").value.trim();
+        const equipo = {
+            id: document.getElementById("idEquipo").value.trim(),
+            tipo: document.getElementById("tipo").value.trim(),
+            modelo: document.getElementById("modelo").value.trim(),
+            componentes: document.getElementById("componentes").value.trim(),
+            estado: document.getElementById("estado").value.trim(),
+            ubicacion: document.getElementById("ubicacion").value.trim()
+        };
 
-        if (!id || !tipo || !modelo || !componentes || !estado || !ubicacion) {
-            alert("Por favor, completá todos los campos.");
+        if (Object.values(equipo).some(campo => campo === "")) {
+            alert("Todos los campos son obligatorios.");
             return;
         }
 
-        const nuevoEquipo = { id, tipo, modelo, componentes, estado, ubicacion };
-        inventario.push(nuevoEquipo);
+        inventario.push(equipo);
         localStorage.setItem("inventario", JSON.stringify(inventario));
-        insertarFila(nuevoEquipo);
         limpiarFormulario();
+        renderInventario();
     }
 
-    function insertarFila(equipo) {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-            <td>${equipo.id}</td>
-            <td>${equipo.tipo}</td>
-            <td>${equipo.modelo}</td>
-            <td>${equipo.componentes}</td>
-            <td>${equipo.estado}</td>
-            <td>${equipo.ubicacion}</td>
-        `;
-        tabla.appendChild(fila);
+    function renderInventario(filtro = "") {
+        tabla.innerHTML = "";
+        inventario.forEach((equipo, index) => {
+            if (Object.values(equipo).some(v => v.toLowerCase().includes(filtro))) {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                    <td>${equipo.id}</td>
+                    <td>${equipo.tipo}</td>
+                    <td>${equipo.modelo}</td>
+                    <td>${equipo.componentes}</td>
+                    <td>${equipo.estado}</td>
+                    <td>${equipo.ubicacion}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" onclick="editarEquipo(${index})">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarEquipo(${index})">Eliminar</button>
+                    </td>
+                `;
+                tabla.appendChild(fila);
+            }
+        });
     }
 
     function limpiarFormulario() {
-        document.getElementById("idEquipo").value = "";
-        document.getElementById("tipo").value = "";
-        document.getElementById("modelo").value = "";
-        document.getElementById("componentes").value = "";
-        document.getElementById("estado").value = "";
-        document.getElementById("ubicacion").value = "";
+        ['idEquipo', 'tipo', 'modelo', 'componentes', 'estado', 'ubicacion'].forEach(id => {
+            document.getElementById(id).value = "";
+        });
+    }
+
+    function eliminarEquipo(index) {
+        if (confirm("¿Seguro que deseas eliminar este equipo?")) {
+            inventario.splice(index, 1);
+            localStorage.setItem("inventario", JSON.stringify(inventario));
+            renderInventario();
+        }
+    }
+
+    function editarEquipo(index) {
+        const e = inventario[index];
+        document.getElementById("editIndex").value = index;
+        document.getElementById("editId").value = e.id;
+        document.getElementById("editTipo").value = e.tipo;
+        document.getElementById("editModelo").value = e.modelo;
+        document.getElementById("editComponentes").value = e.componentes;
+        document.getElementById("editEstado").value = e.estado;
+        document.getElementById("editUbicacion").value = e.ubicacion;
+        new bootstrap.Modal(document.getElementById("modalEditar")).show();
+    }
+
+    function guardarEdicion() {
+        const index = document.getElementById("editIndex").value;
+        const actualizado = {
+            id: document.getElementById("editId").value.trim(),
+            tipo: document.getElementById("editTipo").value.trim(),
+            modelo: document.getElementById("editModelo").value.trim(),
+            componentes: document.getElementById("editComponentes").value.trim(),
+            estado: document.getElementById("editEstado").value.trim(),
+            ubicacion: document.getElementById("editUbicacion").value.trim()
+        };
+
+        if (Object.values(actualizado).some(campo => campo === "")) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+
+        inventario[index] = actualizado;
+        localStorage.setItem("inventario", JSON.stringify(inventario));
+        renderInventario();
+        bootstrap.Modal.getInstance(document.getElementById("modalEditar")).hide();
     }
 
     function abrirModal() {
-        document.getElementById("modalSoporte").style.display = "block";
+        new bootstrap.Modal(document.getElementById("modalSoporte")).show();
     }
 
     function cerrarModal() {
-        document.getElementById("modalSoporte").style.display = "none";
+        bootstrap.Modal.getInstance(document.getElementById("modalSoporte")).hide();
+    }
+
+    function cerrarModalEditar() {
+        bootstrap.Modal.getInstance(document.getElementById("modalEditar")).hide();
     }
 </script>
 
+<!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
